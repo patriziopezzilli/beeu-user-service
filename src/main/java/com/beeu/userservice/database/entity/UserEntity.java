@@ -1,6 +1,7 @@
 package com.beeu.userservice.database.entity;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Table(name = "USER")
@@ -18,11 +19,33 @@ public class UserEntity {
     private String birthdate;
     private String relation;
     private String note;
+    private Boolean active;
+    private Boolean marketing_accepted;
+    private Boolean service_accepted;
+    private Date creation_date;
+    private Date last_update_date;
 
     @Column(name = "BEE_ID")
     private String beeId;
 
-    public UserEntity() {}
+    public UserEntity() {
+    }
+
+    public Date getCreation_date() {
+        return creation_date;
+    }
+
+    public void setCreation_date(Date creation_date) {
+        this.creation_date = creation_date;
+    }
+
+    public Date getLast_update_date() {
+        return last_update_date;
+    }
+
+    public void setLast_update_date(Date last_update_date) {
+        this.last_update_date = last_update_date;
+    }
 
     public Long getId() {
         return id;
@@ -86,6 +109,38 @@ public class UserEntity {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean getMarketing_accepted() {
+        return marketing_accepted;
+    }
+
+    public void setMarketing_accepted(Boolean marketing_accepted) {
+        this.marketing_accepted = marketing_accepted;
+    }
+
+    public Boolean getService_accepted() {
+        return service_accepted;
+    }
+
+    public void setService_accepted(Boolean service_accepted) {
+        this.service_accepted = service_accepted;
+    }
+
+    public String getBeeId() {
+        return beeId;
+    }
+
+    public void setBeeId(String beeId) {
+        this.beeId = beeId;
     }
 
     @Override

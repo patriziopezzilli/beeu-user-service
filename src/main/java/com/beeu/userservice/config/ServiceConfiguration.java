@@ -1,10 +1,21 @@
 package com.beeu.userservice.config;
 
+import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -16,6 +27,8 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@EnableRabbit
+@ComponentScan("com.beeu.userservice")
 public class ServiceConfiguration {
 
     @Value("${spring.datasource.driver-class-name}")
@@ -32,6 +45,44 @@ public class ServiceConfiguration {
 
     @Value("${spring.datasource.password}")
     private String password;
+
+    @Autowired
+    RabbitProperties rabbitProperties;
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitProperties.getHost());
+        connectionFactory.setUsername(rabbitProperties.getUsername());
+        connectionFactory.setPassword(rabbitProperties.getPassword());
+        connectionFactory.setVirtualHost(rabbitProperties.getUsername());
+
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(jsonMessageConverter());
+        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+        factory.setConcurrentConsumers(rabbitProperties.getListener().getSimple().getConcurrency());
+        factory.setMaxConcurrentConsumers(rabbitProperties.getListener().getSimple().getMaxConcurrency());
+        factory.setPrefetchCount(rabbitProperties.getListener().getSimple().getPrefetch());
+        factory.setMissingQueuesFatal(false);
+        return factory;
+    }
+
+    @Bean
+    public DefaultMessageHandlerMethodFactory messageHandlerMethodFactory() {
+        DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
+        factory.setMessageConverter(consumerJackson2MessageConverter());
+        return factory;
+    }
+
+    @Bean
+    public MappingJackson2MessageConverter consumerJackson2MessageConverter() {
+        return new MappingJackson2MessageConverter();
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
 
     @Bean
     public DataSource dataSource() {
