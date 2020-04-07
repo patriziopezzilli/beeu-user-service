@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserCreationConsumer {
+public class UserConsumer {
 
     @RabbitListener(queues="create-user")
     public void createUser(byte[] message) {
