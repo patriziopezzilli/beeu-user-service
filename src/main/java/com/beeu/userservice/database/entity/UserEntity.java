@@ -14,8 +14,11 @@ public class UserEntity {
 
     private String title;
     private String name;
+    private String middle_name;
+    private String surname;
     private String company;
     private String url;
+    private String fiscalCode;
     private String birthdate;
     private String relation;
     private String note;
@@ -29,6 +32,30 @@ public class UserEntity {
     private String beeId;
 
     public UserEntity() {
+    }
+
+    public String getMiddle_name() {
+        return middle_name;
+    }
+
+    public void setMiddle_name(String middle_name) {
+        this.middle_name = middle_name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getFiscalCode() {
+        return fiscalCode;
+    }
+
+    public void setFiscalCode(String fiscalCode) {
+        this.fiscalCode = fiscalCode;
     }
 
     public Date getCreation_date() {
